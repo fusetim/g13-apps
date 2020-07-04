@@ -1,0 +1,11 @@
+[package]
+name = "g13-apps"
+version = "0.1.0"
+authors = ["FuseTim <fusetim@gmx.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+embedded-graphics = "0.6.2"
+tokio = { version = "0.2.21", features = ["full"] }

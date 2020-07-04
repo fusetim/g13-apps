@@ -1,0 +1,45 @@
+= G13 Apps
+Fusetim <fusetim@gmx.com>
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
+
+[abstract]
+Simple little applications for your G13 keyboard. Very useful for https://github.com/ecraven/g13[g13] users.
+
+IMPORTANT: Work In Progress -- The software is far from being usable.
+
+toc::[]
+
+== How does it work?
+
+The G13 mini-applications will use the keys already used for this purpose in Windows :
+
+- Thus the L1-4 keys will be used to interact with the launched application. 
+- The BD button will be used to return to the menu.
+
+NOTE: However we will not change the configuration of the https://github.com/ecraven/g13[G13 driver] automatically. The configuration will have to be changed manually with the one supplied.
+
+Applications will be similar to the original G13. You will find a list of applications implemented or to be implemented.
+
+== What applications?
+
+- [ ] Menu -- the application selector
+- [ ] Music Player -- based upon MPRIS data
+- [ ] Clock -- analog and digital
+
+NOTE: Feel free to open an issue (or PR) to request another application.
+
+== License
+
+© 2020 - FuseTim +
+All rights reserved
+
+Program offered under license CeCILL v2.1footnote:[Free license under French law compatible with the GNU GPL license]. +
+https://cecill.info/licences/Licence_CeCILL_V2.1-fr.html[License in French] | https://cecill.info/licences/Licence_CeCILL_V2.1-en.html[License in English]
