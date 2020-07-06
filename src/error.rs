@@ -9,3 +9,9 @@ pub enum DisplayError {
     #[error("unknown display error")]
     Unknown,
 }
+
+#[derive(Error, Debug)]
+pub enum AppError {
+    #[error("unknown app error")]
+    Unknown,
+}

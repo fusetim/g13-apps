@@ -22,13 +22,13 @@ impl<W: Unpin + AsyncWrite> DrawTarget<BinaryColor> for G13Display<'_, W> {
         let Pixel(coord, color) = pixel;
         if let Ok((x @ 0..=159u32, y @ 0..=42u32)) = coord.try_into() {
             // Offset is determined by the byte to write.
-            // The bytes are regrouped by 8 rows (in one column) per byte
-            // Caution: row in 0..8 start at 0, 8..16 at 160, 16..24 at 2*160, etc...
+            // A byte regrouped 8 rows (in one column). The next byte is the 8 rows of the next column.
+            // So: row in 0..8 start at 0, 8..16 at 160, 16..24 at 2*160, etc...
             let offset: usize = (x as usize) + ((y as usize) / 8 * 160) as usize;
             let b: u8 = color.is_on() as u8;
             // The row of pixel is determined by the position of the bit in the byte
             // (the byte is only a range of rows in a column)
-            self.framebuffer[offset] |= b << y % 8;
+            self.framebuffer[offset] |= b << (y % 8);
         }
         Ok(())
     }
@@ -78,7 +78,7 @@ mod test {
         let mut writer = Cursor::new(Vec::<u8>::new());
         let mut display = G13Display::new(&mut writer);
 
-        // Place the pixels int the corners
+        // Place the pixels in the corners
         let pts = [
             Point::new(0, 0),
             Point::new(159, 0),
@@ -108,7 +108,7 @@ mod test {
         let mut writer = Cursor::new(Vec::<u8>::new());
         let mut display = G13Display::new(&mut writer);
 
-        // Place the pixels int the corners
+        // Place the pixels in the corners
         let pts = [
             Point::new(0, 0),
             Point::new(159, 0),
