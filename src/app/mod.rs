@@ -1,53 +1,52 @@
 use crate::error::AppError;
 use async_trait::async_trait;
+use enum_dispatch::enum_dispatch;
+use hello::Hello;
 use menu::Menu;
+use std::marker::Unpin;
+use strum_macros::{EnumCount, EnumString, EnumVariantNames};
 use tokio::io::AsyncWrite;
 
+mod hello;
 mod menu;
 
 /// Listing of all implemented applications.
 /// Probably some of them will be activated only with certain features.
 /// All the applications listed here must have in field, their structure which inherits the App trait.
-pub enum Apps {
-    Menu(Menu),
-}
-
-impl From<usize> for Apps {
-    /// Create an Application instance with its associated id number
-    /// Mainly used by other applications to target the application to be opened when they are closed
-    fn from(index: usize) -> Self {
-        match index {
-            menu if menu == Apps::Menu as usize => Apps::Menu(Menu::default()),
-            _ => Apps::Menu(Menu::default()),
-        }
-    }
+#[enum_dispatch(Application)]
+#[derive(EnumString, EnumVariantNames, EnumCount)]
+#[strum(serialize_all = "snake_case")]
+pub enum App {
+    Menu,
+    Hello,
 }
 
 /// Trait with all interactions between the AppManager and the App itself
-#[async_trait()]
-pub trait App {
+#[async_trait(?Send)]
+#[enum_dispatch]
+pub trait Application {
     /// The main function of the application. It should not return as long as the application is open.
     /// The application to be returned is the application that will be launched after it is closed.
     /// For example, the menu can return the selected application that will be opened. Also, an application
     /// that closes must ask for the Menu to be opened (otherwise another application).
     ///
     /// Caution, the future can be destroyed during an interaction with one of the keys.
-    async fn execute<W: Send + AsyncWrite>(&self, out: &mut W) -> Result<Apps, AppError>
+    async fn execute<W: Unpin + AsyncWrite>(&self, out: &mut W) -> Result<App, AppError>
     where
-        W: AsyncWrite;
+        W: AsyncWrite + Unpin;
 
-    /// Function called as soon as the L1 key is pressed (or a match defined in the configuration).
-    async fn button_l1(&self) -> Result<(), AppError>;
+    /// Function called as soon as the L1 key is pressed (or a matching key defined in the configuration).
+    async fn button_l1(&mut self) -> Result<(), AppError>;
 
-    /// Function called as soon as the L2 key is pressed (or a match defined in the configuration).
-    async fn button_l2(&self) -> Result<(), AppError>;
+    /// Function called as soon as the L2 key is pressed (or a matching key defined in the configuration).
+    async fn button_l2(&mut self) -> Result<(), AppError>;
 
-    /// Function called as soon as the L3 key is pressed (or a match defined in the configuration).
-    async fn button_l3(&self) -> Result<(), AppError>;
+    /// Function called as soon as the L3 key is pressed (or a matching key defined in the configuration).
+    async fn button_l3(&mut self) -> Result<(), AppError>;
 
-    /// Function called as soon as the L4 key is pressed (or a match defined in the configuration).
-    async fn button_l4(&self) -> Result<(), AppError>;
+    /// Function called as soon as the L4 key is pressed (or a matching key defined in the configuration).
+    async fn button_l4(&mut self) -> Result<(), AppError>;
 
-    /// Function called as soon as the BD key is pressed (or a match defined in the configuration).
-    async fn button_bd(&self) -> Result<(), AppError>;
+    /// Function called as soon as the BD key is pressed (or a matching key defined in the configuration).
+    async fn button_bd(&mut self) -> Result<(), AppError>;
 }

@@ -1,17 +1,47 @@
 use thiserror::Error;
 use tokio::io;
 
+/// The master error for this binary
 #[derive(Error, Debug)]
-pub enum DisplayError {
-    #[error("display and/or service disconnected")]
-    Disconnect(#[from] io::Error),
+pub enum Error {
 
-    #[error("unknown display error")]
+    /// Represents an error occured by one of the g13 apps
+    #[error("App error occured")]
+    AppError(#[from] crate::error::AppError),
+
+    /// Represents an error dues to the named pipes
+    #[error("Bad pipe error")]
+    BadPipeError(#[from] io::Error),
+
+    /// As named, it represents an unknown error
+    #[error("unknown error")]
+    Unknown,
+}
+
+/// All errors that can be produced by a g13 app
+#[derive(Error, Debug)]
+pub enum AppError {
+    /// Represents an parsing error for an App. 
+    /// Its names is unknown in the [crate::app::App] enum
+    #[error("Unknown app error")]
+    UnknownApp(#[from] strum::ParseError),
+
+    /// Represents an error caused by the G13 display 
+    #[error("display error")]
+    DisplayError(#[from] crate::error::DisplayError),
+
+    /// As named, it represents an unknown error
+    #[error("unknown app error")]
     Unknown,
 }
 
 #[derive(Error, Debug)]
-pub enum AppError {
-    #[error("unknown app error")]
+pub enum DisplayError {
+    /// Represents an error occured by writing in the G13 named pipes
+    #[error("display and/or service disconnected")]
+    Disconnect(#[from] io::Error),
+
+    /// As named, it represents an unknown error
+    #[error("unknown display error")]
     Unknown,
 }

@@ -11,3 +11,6 @@ embedded-graphics = "0.6.2"
 thiserror = "1.0"
 tokio = { version = "0.2.21", features = ["full"] }
 async-trait = "0.1.36"
+enum_dispatch = "0.3.1"
+strum = "0.18.0"
+strum_macros = "0.18.0"

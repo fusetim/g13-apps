@@ -55,12 +55,8 @@ impl<'a, W: Unpin + AsyncWrite + 'a> G13Display<'a, W> {
     /// Flush the current framebuffer to the display using the inner writer
     pub async fn flush(&mut self) -> Result<(), DisplayError> {
         self.tx.write(&self.to_bytes()).await?;
+        self.tx.flush().await?;
         Ok(())
-    }
-
-    /// Clear the framebuffer
-    pub fn clear(&mut self) {
-        self.framebuffer = [0; 20 * 48];
     }
 }
 
