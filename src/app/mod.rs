@@ -16,6 +16,7 @@ mod menu;
 #[enum_dispatch(Application)]
 #[derive(EnumString, EnumVariantNames, EnumCount)]
 #[strum(serialize_all = "snake_case")]
+#[non_exhaustive]
 pub enum App {
     Menu,
     Hello,

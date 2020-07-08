@@ -14,6 +14,7 @@ use tokio::stream::StreamExt;
 mod app;
 mod display;
 mod error;
+mod style;
 
 #[tokio::main]
 async fn main() {
@@ -28,7 +29,7 @@ async fn main() {
     // Start the menu app
     let mut app = App::from_str("menu").expect("Menu app should exist!");
 
-    // Wait for app to finish or user input (and restart again)
+    // Wait for app to finish or user input (and do it forever)
     loop {
         select! {
             _app = app.execute(&mut output) => {
@@ -50,24 +51,17 @@ async fn main() {
     }
 }
 
-
 /// Open the G13 named pipes given.
 /// Pipes are open in BufReader annd BufWriter.
-/// 
+///
 /// path_in is path for the g13 input pipe
 /// and path_out is path for the g13 output pipe
 async fn open_pipes<P: AsRef<Path>, Q: AsRef<Path>>(
     path_in: P,
     path_out: Q,
 ) -> Result<(BufReader<File>, BufWriter<File>), Error> {
-    let pipe_in = OpenOptions::new()
-        .write(true)
-        .open(path_in)
-        .await?;
-    let pipe_out = OpenOptions::new()
-        .read(true)
-        .open(path_out)
-        .await?;
+    let pipe_in = OpenOptions::new().write(true).open(path_in).await?;
+    let pipe_out = OpenOptions::new().read(true).open(path_out).await?;
     let output = BufWriter::new(pipe_in);
     let input = BufReader::new(pipe_out);
     Ok((input, output))

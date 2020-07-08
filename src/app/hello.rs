@@ -15,7 +15,7 @@ use std::time::Duration;
 use tokio::io::AsyncWrite;
 use tokio::time;
 
-/// A simple hello world app 
+/// A simple hello world app
 #[derive(Clone, Debug, Default)]
 pub struct Hello {
     /// Define if the app should end/return
@@ -48,7 +48,7 @@ impl Application for Hello {
         while !self.end {
             interval.tick().await;
         }
-        
+
         // Return to menu app
         Ok(App::from_str("menu")?)
     }

@@ -25,10 +25,15 @@ impl<W: Unpin + AsyncWrite> DrawTarget<BinaryColor> for G13Display<'_, W> {
             // A byte regrouped 8 rows (in one column). The next byte is the 8 rows of the next column.
             // So: row in 0..8 start at 0, 8..16 at 160, 16..24 at 2*160, etc...
             let offset: usize = (x as usize) + ((y as usize) / 8 * 160) as usize;
-            let b: u8 = color.is_on() as u8;
             // The row of pixel is determined by the position of the bit in the byte
             // (the byte is only a range of rows in a column)
-            self.framebuffer[offset] |= b << (y % 8);
+            if color.is_on() {
+                // set the bit
+                self.framebuffer[offset] |= 1 << (y % 8);
+            } else {
+                // unset the bit
+                self.framebuffer[offset] &= !(1 << (y % 8));
+            }
         }
         Ok(())
     }

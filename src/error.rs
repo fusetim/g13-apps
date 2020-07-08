@@ -4,7 +4,6 @@ use tokio::io;
 /// The master error for this binary
 #[derive(Error, Debug)]
 pub enum Error {
-
     /// Represents an error occured by one of the g13 apps
     #[error("App error occured")]
     AppError(#[from] crate::error::AppError),
@@ -21,12 +20,12 @@ pub enum Error {
 /// All errors that can be produced by a g13 app
 #[derive(Error, Debug)]
 pub enum AppError {
-    /// Represents an parsing error for an App. 
+    /// Represents an parsing error for an App.
     /// Its names is unknown in the [crate::app::App] enum
     #[error("Unknown app error")]
     UnknownApp(#[from] strum::ParseError),
 
-    /// Represents an error caused by the G13 display 
+    /// Represents an error caused by the G13 display
     #[error("display error")]
     DisplayError(#[from] crate::error::DisplayError),
 

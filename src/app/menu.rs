@@ -3,13 +3,14 @@ use crate::app::Application;
 use crate::app::APP_COUNT;
 use crate::display::G13Display;
 use crate::error::AppError;
+use crate::style::{FILL_ON, TEXT_BOLD, TEXT_REGULAR, TITLE_BOLD};
 use async_trait::async_trait;
 use embedded_graphics::{
-    fonts::{Font6x8, Text},
-    pixelcolor::BinaryColor,
-    prelude::*,
-    style::TextStyleBuilder,
+    fonts::Text, pixelcolor::BinaryColor, prelude::*, primitives::Rectangle,
+    style::PrimitiveStyleBuilder,
 };
+use once_cell::sync::Lazy;
+use std::iter::IntoIterator;
 use std::marker::Unpin;
 use std::str::FromStr;
 use std::time::Duration;
@@ -35,12 +36,10 @@ impl Application for Menu {
         let mut interval = time::interval(Duration::from_millis(100));
         let mut display = G13Display::new(out);
         let mut last_cursor: usize = usize::MAX;
+        let apps: &[&'static str] = App::VARIANTS;
 
-        // Construct a TextStyle for the menu text - temporary
-        let style = TextStyleBuilder::new(Font6x8)
-        .text_color(BinaryColor::Off)
-        .background_color(BinaryColor::On)
-        .build();
+        // Draw the base interface
+        (*MENU_INTERFACE).clone().into_iter().draw(&mut display)?;
 
         #[warn(clippy::while_immutable_condition)]
         while !self.end {
@@ -49,23 +48,27 @@ impl Application for Menu {
                 interval.tick().await;
                 continue;
             }
-            last_cursor = self.cursor;      
+            last_cursor = self.cursor;
 
             // Draw the menu cursor to the G13 device
-            Text::new(
-                &format!("Menu; cursor: {}", self.cursor),
-                Point::new(5, 43 / 2 - 3),
-            )
-            .into_styled(style)
-            .draw(&mut display)?;
+            for i in 0..3i32 {
+                if self.cursor == 0 && i == 0 {
+                    continue;
+                }
+                if let Some(name) = apps.get(self.cursor + (i as usize) - 1) {
+                    let prefix = if i == 1 { ">" } else { " " };
+                    Text::new(&format!("{} {}", prefix, name), Point::new(33, 10 + 8 * i))
+                        .into_styled(*TEXT_REGULAR)
+                        .draw(&mut display)?;
+                }
+            }
 
-            // Flush and wait
+            // Flush and await
             display.flush().await?;
             interval.tick().await;
         }
 
         // In case, an app is selected, we ask for run it.
-        let apps: &[&'static str] = App::VARIANTS;
         Ok(App::from_str(apps[self.cursor])?)
     }
 
@@ -102,3 +105,42 @@ impl Application for Menu {
         Ok(())
     }
 }
+
+// The static part of the menu interface
+static MENU_INTERFACE: Lazy<Vec<Pixel<BinaryColor>>> = Lazy::new(|| {
+    // Draw the image container
+    let img_placeholder = PrimitiveStyleBuilder::new()
+        .stroke_color(BinaryColor::On)
+        .stroke_width(1)
+        .fill_color(BinaryColor::Off)
+        .build();
+    let image = Rectangle::new(Point::new(0, 0), Point::new(32, 32))
+        .into_styled(img_placeholder)
+        .into_iter();
+
+    // Draw the title
+    let bg_title = Rectangle::new(Point::new(33, 0), Point::new(159, 8))
+        .into_styled(*FILL_ON)
+        .into_iter();
+    let title = Text::new("\u{2195} Menu", Point::new(34, 1))
+        .into_styled(*TITLE_BOLD)
+        .into_iter();
+
+    // Draw the button info
+    let button1 = Text::new("OK", Point::new(40 / 2 - 12, 36))
+        .into_styled(*TEXT_BOLD)
+        .into_iter();
+    let button3 = Text::new("\u{25B2}", Point::new(2 * 40 + 40 / 2 - 4, 36))
+        .into_styled(*TEXT_BOLD)
+        .into_iter();
+    let button4 = Text::new("\u{25BC}", Point::new(3 * 40 + 40 / 2 - 4, 36))
+        .into_styled(*TEXT_BOLD)
+        .into_iter();
+    image
+        .chain(bg_title)
+        .chain(title)
+        .chain(button1)
+        .chain(button3)
+        .chain(button4)
+        .collect()
+});
