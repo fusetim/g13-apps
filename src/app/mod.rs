@@ -1,5 +1,7 @@
 use crate::error::AppError;
 use async_trait::async_trait;
+#[cfg(feature = "clock")]
+use clock::Clock;
 use enum_dispatch::enum_dispatch;
 use hello::Hello;
 use menu::Menu;
@@ -7,6 +9,8 @@ use std::marker::Unpin;
 use strum_macros::{EnumCount, EnumString, EnumVariantNames};
 use tokio::io::AsyncWrite;
 
+#[cfg(feature = "clock")]
+mod clock;
 mod hello;
 mod menu;
 
@@ -20,6 +24,8 @@ mod menu;
 pub enum App {
     Menu,
     Hello,
+    #[cfg(feature = "clock")]
+    Clock,
 }
 
 /// Trait with all interactions between the AppManager and the App itself

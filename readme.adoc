@@ -30,9 +30,11 @@ Applications will be similar to the original G13. You will find a list of applic
 
 == What applications?
 
-- [ ] Menu -- the application selector
+- [X] Menu -- the application selector
 - [ ] Music Player -- based upon MPRIS data
-- [ ] Clock -- analog and digital
+- [X] Clock -- analog and digital
+
+WARNING: Applications can be disabled at compile time (thanks to features flag). However this is not yet the case.
 
 NOTE: Feel free to open an issue (or PR) to request another application.
 
