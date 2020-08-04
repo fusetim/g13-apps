@@ -13,7 +13,7 @@ endif::[]
 [abstract]
 Simple little applications for your G13 keyboard. Very useful for https://github.com/ecraven/g13[g13] users.
 
-IMPORTANT: Work In Progress -- The software is far from being usable.
+IMPORTANT: Work In Progress -- Applications are slowly developed step by step.
 
 toc::[]
 
@@ -24,19 +24,62 @@ The G13 mini-applications will use the keys already used for this purpose in Win
 - Thus the L1-4 keys will be used to interact with the launched application. 
 - The BD button will be used to return to the menu.
 
-NOTE: However we will not change the configuration of the https://github.com/ecraven/g13[G13 driver] automatically. The configuration will have to be changed manually with the one supplied.
+[NOTE]
+--
+However we will not change the configuration of the https://github.com/ecraven/g13[G13 driver] automatically. The configuration will have to be changed manually with the one supplied. 
+
+See the keybind link:g13-apps.bind[].
+--
 
 Applications will be similar to the original G13. You will find a list of applications implemented or to be implemented.
 
 == What applications?
 
-- [X] Menu -- the application selector
+- [x] Menu -- the application selector
+- [x] Clock -- analog and digital
 - [ ] Music Player -- based upon MPRIS data
-- [X] Clock -- analog and digital
 
-WARNING: Applications can be disabled at compile time (thanks to features flag). However this is not yet the case.
+[NOTE]
+--
+All applications can be disabled at compile time. +
+*Now works with enum_dispatch v0.3.2!*
+--
 
 NOTE: Feel free to open an issue (or PR) to request another application.
+
+== Getting started
+
+First of all, you will need a recent Rust setup. See https://rustup.rs[Rustup] installation guide, if needed.
+
+To build g13-apps, you need to clone the repo:
+```shell
+$ git clone https://github.com/fusetim/g13-apps.git
+```
+
+Before compiling g13-apps, you will need to know the paths to the in and out pipes of the https://github.com/ecraven/g13[G13 driver].
+By default, it's `/tmp/g13-0` (in) and `/tmp/g13-0_out` (out).
+
+.Set-up the env-var
+```shell
+$ set -x G13_IN /run/g13d/g13-0
+$ set -x G13_OUT /run/g13d/g13-0_out
+```
+
+And finally, you can build the apps with all the features you want:
+```shell
+$ cargo build --release [--features <feature1> [feature2..] ]
+```
+
+So, if you want the clock app, just add the clock feature, like:
+```shell
+$ cargo build --release --features clock
+```
+
+And now, enjoy your new application at `./target/release/g13-apps`.
+
+NOTE: Implementation as a user service is planned in the future.
+
+NOTE: If wanted, you can install g13-apps as a system app with `cargo install`.
 
 == License
 
