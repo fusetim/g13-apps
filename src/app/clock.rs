@@ -8,9 +8,7 @@ use chrono::DateTime;
 use chrono::Local;
 use embedded_graphics::geometry::Point;
 use embedded_graphics::primitives::{Circle, Line};
-use embedded_graphics::{
-    fonts::Text, pixelcolor::BinaryColor, prelude::*,
-};
+use embedded_graphics::{fonts::Text, pixelcolor::BinaryColor, prelude::*};
 use std::marker::Unpin;
 use std::str::FromStr;
 use std::time::Duration;

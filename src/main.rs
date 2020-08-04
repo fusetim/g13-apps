@@ -12,6 +12,7 @@ use tokio::select;
 use tokio::stream::StreamExt;
 
 mod app;
+mod component;
 mod display;
 mod error;
 mod style;
