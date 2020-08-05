@@ -1,6 +1,7 @@
 use crate::app::App;
 use crate::app::Application;
 use crate::app::APP_COUNT;
+use crate::component::appbar::AppBar;
 use crate::display::G13Display;
 use crate::error::AppError;
 use crate::style::{FILL_ON, TEXT_BOLD, TEXT_REGULAR, TITLE_BOLD};
@@ -118,13 +119,7 @@ static MENU_INTERFACE: Lazy<Vec<Pixel<BinaryColor>>> = Lazy::new(|| {
         .into_styled(img_placeholder)
         .into_iter();
 
-    // Draw the title
-    let bg_title = Rectangle::new(Point::new(33, 0), Point::new(159, 8))
-        .into_styled(*FILL_ON)
-        .into_iter();
-    let title = Text::new("\u{2195} Menu", Point::new(34, 1))
-        .into_styled(*TITLE_BOLD)
-        .into_iter();
+    let appbar = AppBar::new("\u{2195} Menu", Point::new(33, 0), Point::new(159, 8)).into_iter();
 
     // Draw the button info
     let button1 = Text::new("OK", Point::new(40 / 2 - 12, 36))
@@ -137,8 +132,7 @@ static MENU_INTERFACE: Lazy<Vec<Pixel<BinaryColor>>> = Lazy::new(|| {
         .into_styled(*TEXT_BOLD)
         .into_iter();
     image
-        .chain(bg_title)
-        .chain(title)
+        .chain(appbar)
         .chain(button1)
         .chain(button3)
         .chain(button4)

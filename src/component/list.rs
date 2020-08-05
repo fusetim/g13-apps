@@ -54,15 +54,12 @@ impl List {
     }
 
     /// Draw a list in the given border, defined by the points given of a rectangle.
-    pub fn draw_within_border<D>(
+    pub fn draw_within_border<D: DrawTarget<BinaryColor>>(
         &self,
         display: &mut D,
         up_corner: Point,
         down_corner: Point,
-    ) -> Result<(), DisplayError>
-    where
-        D: DrawTarget<BinaryColor, Error = DisplayError>,
-    {
+    ) -> Result<(), D::Error> {
         let mut pixels: Vec<Pixel<BinaryColor>> = Vec::new();
         let (left_offset, up_offset) = (up_corner.x, up_corner.y);
         let (right_offset, down_offset) = (down_corner.x, down_corner.y);
