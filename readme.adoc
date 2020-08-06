@@ -65,17 +65,26 @@ $ set -x G13_IN /run/g13d/g13-0
 $ set -x G13_OUT /run/g13d/g13-0_out
 ```
 
+[WARNING]
+Please note that the indicated pipe paths are included and compiled. + 
+If the paths ever change, it will be necessary to recompile the whole app.
+
 And finally, you can build the apps with all the features you want:
 ```shell
 $ cargo build --release [--features <feature1> [feature2..] ]
 ```
 
-So, if you want the clock app, just add the clock feature, like:
+.Build G13-apps with clock feature:
+====
+If you want the clock app, for example, just add the clock feature, like this:
 ```shell
 $ cargo build --release --features clock
 ```
+====
 
 And now, enjoy your new application at `./target/release/g13-apps`.
+
+All you have to do now is configure the right key-binding (in the G13 driver's config) and you will be able to take advantage of all the applications you have chosen. See link:g13-apps.bind[] for example.
 
 NOTE: Implementation as a user service is planned in the future.
 
@@ -86,5 +95,5 @@ NOTE: If wanted, you can install g13-apps as a system app with `cargo install`.
 © 2020 - FuseTim +
 All rights reserved
 
-Program offered under license CeCILL v2.1footnote:[Free license under French law compatible with the GNU GPL license]. +
+Program offered under license CeCILL v2.1footnote:[Free license under French law compatible with the GNU GPL licenses]. +
 https://cecill.info/licences/Licence_CeCILL_V2.1-fr.html[License in French] | https://cecill.info/licences/Licence_CeCILL_V2.1-en.html[License in English]

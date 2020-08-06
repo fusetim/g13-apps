@@ -2,9 +2,10 @@ use crate::app::App;
 use crate::app::Application;
 use crate::app::APP_COUNT;
 use crate::component::appbar::AppBar;
+use crate::component::buttonbar::{Button, ButtonBar};
 use crate::display::G13Display;
 use crate::error::AppError;
-use crate::style::{FILL_ON, TEXT_BOLD, TEXT_REGULAR, TITLE_BOLD};
+use crate::style::{TEXT_BOLD, TEXT_REGULAR};
 use async_trait::async_trait;
 use embedded_graphics::{
     fonts::Text, pixelcolor::BinaryColor, prelude::*, primitives::Rectangle,
@@ -122,19 +123,10 @@ static MENU_INTERFACE: Lazy<Vec<Pixel<BinaryColor>>> = Lazy::new(|| {
     let appbar = AppBar::new("\u{2195} Menu", Point::new(33, 0), Point::new(159, 8)).into_iter();
 
     // Draw the button info
-    let button1 = Text::new("OK", Point::new(40 / 2 - 12, 36))
-        .into_styled(*TEXT_BOLD)
-        .into_iter();
-    let button3 = Text::new("\u{25B2}", Point::new(2 * 40 + 40 / 2 - 4, 36))
-        .into_styled(*TEXT_BOLD)
-        .into_iter();
-    let button4 = Text::new("\u{25BC}", Point::new(3 * 40 + 40 / 2 - 4, 36))
-        .into_styled(*TEXT_BOLD)
-        .into_iter();
-    image
-        .chain(appbar)
-        .chain(button1)
-        .chain(button3)
-        .chain(button4)
-        .collect()
+    let mut buttonbar: ButtonBar = Default::default();
+    buttonbar.set_button1(Some(Button::from_str("OK")));
+    buttonbar.set_button3(Some(Button::from_str("\u{25B2}")));
+    buttonbar.set_button4(Some(Button::from_str("\u{25BC}")));
+
+    image.chain(appbar).chain(buttonbar.into_iter()).collect()
 });
