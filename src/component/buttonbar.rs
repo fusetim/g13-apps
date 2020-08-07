@@ -1,40 +1,47 @@
+use crate::style::TEXT_BOLD;
 use embedded_graphics::drawable::Drawable;
 use embedded_graphics::drawable::Pixel;
+use embedded_graphics::fonts::Text;
 use embedded_graphics::geometry::Dimensions;
 use embedded_graphics::geometry::Point;
 use embedded_graphics::geometry::Size;
 use embedded_graphics::pixelcolor::BinaryColor;
 use embedded_graphics::transform::Transform;
 use embedded_graphics::DrawTarget;
-use embedded_graphics::fonts::Text;
-use crate::style::TEXT_BOLD;
 
+/// The constant height of a button, here 8px.
 const BUTTON_HEIGHT: u32 = 8;
+/// The constant width of a button, here 40px.
 const BUTTON_WIDTH: u32 = 40; // 160 / 4
-const HEIGHT_OFFSET : i32 = 35;
+/// The height where the button bar will be drawed.
+/// It's 35px, to draw on the G13 last line.
+const HEIGHT_OFFSET: i32 = 35;
 
+/// A button component.
+/// Mainly used with the ButtonBar component
 #[derive(Clone, Debug)]
 pub struct Button {
     top_left: Point,
     bottom_right: Point,
-    size: Size,
     pixels: Vec<Pixel<BinaryColor>>,
 }
 
 impl Button {
-    pub fn from_drawable<
-        D: IntoIterator<Item = Pixel<BinaryColor>>,
-    >(
-        drawable: D, top_left: Point, bottom_right: Point
+    /// Create a button from an existing drawable.
+    /// &Drawable does not implement Dimensions, so you have to set them
+    pub fn from_drawable<D: IntoIterator<Item = Pixel<BinaryColor>>>(
+        drawable: D,
+        top_left: Point,
+        bottom_right: Point,
     ) -> Button {
         Button {
             top_left,
             bottom_right,
-            size: Size::new((bottom_right.x - top_left.x).abs() as u32, (bottom_right.y - top_left.y).abs() as u32),
             pixels: drawable.into_iter().collect(),
         }
     }
 
+    /// Create a text button with the given str
     pub fn from_str(text: &str) -> Button {
         let comp = Text::new(text, Point::zero()).into_styled(*TEXT_BOLD);
         Button::from_drawable(&comp, comp.top_left(), comp.bottom_right())
@@ -43,8 +50,7 @@ impl Button {
 
 impl Drawable<BinaryColor> for Button {
     fn draw<D: DrawTarget<BinaryColor>>(self, display: &mut D) -> Result<(), D::Error> {
-        self.pixels.into_iter().draw(display)?;
-        Ok(())
+        self.pixels.into_iter().draw(display)
     }
 }
 
@@ -53,7 +59,6 @@ impl Transform for Button {
         Self {
             top_left: self.top_left + by,
             bottom_right: self.bottom_right + by,
-            size: self.size,
             pixels: self
                 .pixels
                 .iter()
@@ -84,7 +89,10 @@ impl Dimensions for Button {
     }
 
     fn size(&self) -> Size {
-        self.size
+        Size::new(
+            (self.bottom_right.x - self.top_left.x).abs() as u32,
+            (self.bottom_right.y - self.top_left.y).abs() as u32,
+        )
     }
 }
 
@@ -97,6 +105,8 @@ impl IntoIterator for Button {
     }
 }
 
+/// A Button bar component.
+/// Can handle up to 4 buttons.
 #[derive(Default, Clone, Debug)]
 pub struct ButtonBar {
     button1: Option<Button>,
@@ -106,6 +116,8 @@ pub struct ButtonBar {
 }
 
 impl ButtonBar {
+    /// Create a buttonbar with the givenn button.
+    /// A button set to None, will not be drawed
     pub fn new(
         btn1: Option<Button>,
         btn2: Option<Button>,
@@ -120,15 +132,22 @@ impl ButtonBar {
         }
     }
 
+    /// Set the button 1 in the button bar
     pub fn set_button1(&mut self, btn1: Option<Button>) {
         self.button1 = btn1;
     }
+
+    /// Set the button 2 in the button bar
     pub fn set_button2(&mut self, btn2: Option<Button>) {
         self.button2 = btn2;
     }
+
+    /// Set the button 3 in the button bar
     pub fn set_button3(&mut self, btn3: Option<Button>) {
         self.button3 = btn3;
     }
+
+    /// Set the button 4 in the button bar
     pub fn set_button4(&mut self, btn4: Option<Button>) {
         self.button4 = btn4;
     }
@@ -136,8 +155,7 @@ impl ButtonBar {
 
 impl Drawable<BinaryColor> for ButtonBar {
     fn draw<T: DrawTarget<BinaryColor>>(self, display: &mut T) -> Result<(), T::Error> {
-        self.into_iter().draw(display)?;
-        Ok(())
+        self.into_iter().draw(display)
     }
 }
 
@@ -146,31 +164,38 @@ impl IntoIterator for ButtonBar {
     type IntoIter = std::vec::IntoIter<Pixel<BinaryColor>>;
 
     fn into_iter(self) -> Self::IntoIter {
+        /// Will tranform the button and return its pixels
         fn button_pixel_iter(btn: Option<Button>, offset: Point) -> Vec<Pixel<BinaryColor>> {
             match btn {
                 Some(btn) => {
+                    // Get the free space
                     let free = Size::new(BUTTON_WIDTH, BUTTON_HEIGHT) - btn.size();
+                    // Center the button in its place
                     let pos: Point = offset + (free / 2);
-                    btn.translate(pos).into_iter().collect()
+                    btn.translate(pos).into_iter().collect() // and collect its pixels
                 }
                 None => Vec::with_capacity(0),
             }
         }
-        button_pixel_iter(self.button1, Point::new(0 * BUTTON_WIDTH as i32, HEIGHT_OFFSET))
-            .into_iter()
-            .chain(button_pixel_iter(
-                self.button2,
-                Point::new(1 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
-            ))
-            .chain(button_pixel_iter(
-                self.button3,
-                Point::new(2 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
-            ))
-            .chain(button_pixel_iter(
-                self.button4,
-                Point::new(3 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
-            ))
-            .collect::<Vec<_>>()
-            .into_iter()
+        // Chain all the buttons pixel
+        button_pixel_iter(
+            self.button1,
+            Point::new(0 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
+        )
+        .into_iter()
+        .chain(button_pixel_iter(
+            self.button2,
+            Point::new(1 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
+        ))
+        .chain(button_pixel_iter(
+            self.button3,
+            Point::new(2 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
+        ))
+        .chain(button_pixel_iter(
+            self.button4,
+            Point::new(3 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
+        ))
+        .collect::<Vec<_>>()
+        .into_iter()
     }
 }

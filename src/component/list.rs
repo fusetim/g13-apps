@@ -50,7 +50,7 @@ impl List {
     where
         D: DrawTarget<BinaryColor, Error = DisplayError>,
     {
-        Ok(self.draw_within_border(display, Point::new(0, 10), Point::new(159, 34))?)
+        self.draw_within_border(display, Point::new(0, 10), Point::new(159, 34))
     }
 
     /// Draw a list in the given border, defined by the points given of a rectangle.
@@ -91,7 +91,6 @@ impl List {
             }
         }
         // draw all visible choices
-        pixels.into_iter().draw(display)?;
-        Ok(())
+        pixels.into_iter().draw(display)
     }
 }

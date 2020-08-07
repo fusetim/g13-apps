@@ -28,8 +28,7 @@ impl AppBar {
 
 impl Drawable<BinaryColor> for AppBar {
     fn draw<D: DrawTarget<BinaryColor>>(self, display: &mut D) -> Result<(), D::Error> {
-        self.into_iter().draw(display)?;
-        Ok(())
+        self.into_iter().draw(display)
     }
 }
 
