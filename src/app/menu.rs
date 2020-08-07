@@ -1,15 +1,13 @@
 use crate::app::App;
 use crate::app::Application;
-use crate::app::APP_COUNT;
 use crate::component::appbar::AppBar;
 use crate::component::buttonbar::{Button, ButtonBar};
+use crate::component::list::List;
 use crate::display::G13Display;
 use crate::error::AppError;
-use crate::style::{TEXT_BOLD, TEXT_REGULAR};
 use async_trait::async_trait;
 use embedded_graphics::{
-    fonts::Text, pixelcolor::BinaryColor, prelude::*, primitives::Rectangle,
-    style::PrimitiveStyleBuilder,
+    pixelcolor::BinaryColor, prelude::*, primitives::Rectangle, style::PrimitiveStyleBuilder,
 };
 use once_cell::sync::Lazy;
 use std::iter::IntoIterator;
@@ -21,12 +19,23 @@ use tokio::io::AsyncWrite;
 use tokio::time;
 
 /// The G13 menu app
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct Menu {
-    /// Store the index for an app
-    cursor: usize,
     /// Define if the app should end/return
     end: bool,
+    /// The internal list of apps component
+    list: List,
+}
+
+impl Default for Menu {
+    fn default() -> Self {
+        let apps: &[&'static str] = App::VARIANTS;
+        Self {
+            end: false,
+            // Build the app list
+            list: List::new(apps.iter().map(|name| name.to_string()).collect()),
+        }
+    }
 }
 
 #[async_trait(?Send)]
@@ -38,7 +47,6 @@ impl Application for Menu {
         let mut interval = time::interval(Duration::from_millis(100));
         let mut display = G13Display::new(out);
         let mut last_cursor: usize = usize::MAX;
-        let apps: &[&'static str] = App::VARIANTS;
 
         // Draw the base interface
         (*MENU_INTERFACE).clone().into_iter().draw(&mut display)?;
@@ -46,24 +54,16 @@ impl Application for Menu {
         #[warn(clippy::while_immutable_condition)]
         while !self.end {
             // If the cursor does not change between iteration, just wait
-            if last_cursor == self.cursor {
+            let list: &List = &self.list;
+            let cursor = list.get_cursor();
+            if last_cursor == cursor {
                 interval.tick().await;
                 continue;
             }
-            last_cursor = self.cursor;
+            last_cursor = cursor;
 
             // Draw the menu cursor to the G13 device
-            for i in 0..3i32 {
-                if self.cursor == 0 && i == 0 {
-                    continue;
-                }
-                if let Some(name) = apps.get(self.cursor + (i as usize) - 1) {
-                    let prefix = if i == 1 { ">" } else { " " };
-                    Text::new(&format!("{} {}", prefix, name), Point::new(33, 10 + 8 * i))
-                        .into_styled(*TEXT_REGULAR)
-                        .draw(&mut display)?;
-                }
-            }
+            list.draw_within_border(&mut display, Point::new(32, 10), Point::new(160, 35))?;
 
             // Flush and await
             display.flush().await?;
@@ -71,7 +71,7 @@ impl Application for Menu {
         }
 
         // In case, an app is selected, we ask for run it.
-        Ok(App::from_str(apps[self.cursor])?)
+        Ok(App::from_str(self.list.get_current())?)
     }
 
     /// Represents the selection button
@@ -87,23 +87,19 @@ impl Application for Menu {
 
     /// Represents the previous button
     async fn button_l3(&mut self) -> Result<(), AppError> {
-        if self.cursor > 0 {
-            self.cursor -= 1;
-        }
+        self.list.previous();
         Ok(())
     }
 
     /// Represents the next button
     async fn button_l4(&mut self) -> Result<(), AppError> {
-        if self.cursor < APP_COUNT - 1 {
-            self.cursor += 1;
-        }
+        self.list.next();
         Ok(())
     }
 
     /// Represents the "return" button (it reset the cursor)
     async fn button_bd(&mut self) -> Result<(), AppError> {
-        self.cursor = 0;
+        self.list.reset();
         Ok(())
     }
 }

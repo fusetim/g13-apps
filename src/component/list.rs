@@ -25,6 +25,11 @@ impl List {
         self.cursor
     }
 
+    /// Reset the cursor to 0
+    pub fn reset(&mut self) {
+        self.cursor = 0;
+    }
+
     /// Get the current choice selected
     pub fn get_current(&self) -> &str {
         self.content.get(self.cursor).unwrap()

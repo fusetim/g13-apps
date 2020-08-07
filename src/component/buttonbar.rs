@@ -178,24 +178,21 @@ impl IntoIterator for ButtonBar {
             }
         }
         // Chain all the buttons pixel
-        button_pixel_iter(
-            self.button1,
-            Point::new(0 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
-        )
-        .into_iter()
-        .chain(button_pixel_iter(
-            self.button2,
-            Point::new(1 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
-        ))
-        .chain(button_pixel_iter(
-            self.button3,
-            Point::new(2 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
-        ))
-        .chain(button_pixel_iter(
-            self.button4,
-            Point::new(3 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
-        ))
-        .collect::<Vec<_>>()
-        .into_iter()
+        button_pixel_iter(self.button1, Point::new(0, HEIGHT_OFFSET))
+            .into_iter()
+            .chain(button_pixel_iter(
+                self.button2,
+                Point::new(BUTTON_WIDTH as i32, HEIGHT_OFFSET),
+            ))
+            .chain(button_pixel_iter(
+                self.button3,
+                Point::new(2 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
+            ))
+            .chain(button_pixel_iter(
+                self.button4,
+                Point::new(3 * BUTTON_WIDTH as i32, HEIGHT_OFFSET),
+            ))
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 }

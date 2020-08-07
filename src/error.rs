@@ -22,8 +22,12 @@ pub enum Error {
 pub enum AppError {
     /// Represents an parsing error for an App.
     /// Its names is unknown in the [crate::app::App] enum
-    #[error("Unknown app error")]
+    #[error("Invalid app name error")]
     UnknownApp(#[from] strum::ParseError),
+
+    /// Represents an error while using a badly initilized component
+    #[error("A component is badly initialized")]
+    BadInitialization,
 
     /// Represents an error caused by the G13 display
     #[error("display error")]

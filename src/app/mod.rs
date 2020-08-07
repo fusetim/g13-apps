@@ -14,6 +14,10 @@ mod clock;
 mod hello;
 mod menu;
 
+/// List of apps hidden from the menu.
+/// Needed by error app
+const HIDDEN_APPS: &[&str] = &[];
+
 /// Listing of all implemented applications.
 /// Probably some of them will be activated only with certain features.
 /// All the applications listed here must have in field, their structure which inherits the App trait.
