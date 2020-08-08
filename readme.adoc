@@ -95,5 +95,5 @@ NOTE: If wanted, you can install g13-apps as a system app with `cargo install`.
 © 2020 - FuseTim +
 All rights reserved
 
-Program offered under license CeCILL v2.1footnote:[Free license under French law compatible with the GNU GPL licenses]. +
+Program offered under license CeCILL v2.1footnote:[Free license under French law compatible with the GNU GPL licenses. See section link:license.txt#L289[5.3.2].] +
 https://cecill.info/licences/Licence_CeCILL_V2.1-fr.html[License in French] | https://cecill.info/licences/Licence_CeCILL_V2.1-en.html[License in English]

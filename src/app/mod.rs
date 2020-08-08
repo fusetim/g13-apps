@@ -3,6 +3,7 @@ use async_trait::async_trait;
 #[cfg(feature = "clock")]
 use clock::Clock;
 use enum_dispatch::enum_dispatch;
+#[cfg(feature = "hello")]
 use hello::Hello;
 use menu::Menu;
 use std::marker::Unpin;
@@ -11,22 +12,26 @@ use tokio::io::AsyncWrite;
 
 #[cfg(feature = "clock")]
 mod clock;
+pub mod error;
+#[cfg(feature = "hello")]
 mod hello;
 mod menu;
 
 /// List of apps hidden from the menu.
 /// Needed by error app
-const HIDDEN_APPS: &[&str] = &[];
+pub const HIDDEN_APPS: &[&str] = &["error_app"];
 
 /// Listing of all implemented applications.
 /// Probably some of them will be activated only with certain features.
 /// All the applications listed here must have in field, their structure which inherits the App trait.
 #[enum_dispatch(Application)]
-#[derive(EnumString, EnumVariantNames, EnumCount)]
+#[derive(EnumString, EnumVariantNames, EnumCount, Debug)]
 #[strum(serialize_all = "snake_case")]
 #[non_exhaustive]
 pub enum App {
     Menu,
+    ErrorApp(error::Error),
+    #[cfg(feature = "hello")]
     Hello,
     #[cfg(feature = "clock")]
     Clock,

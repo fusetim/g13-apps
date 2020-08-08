@@ -1,4 +1,5 @@
 use app::App;
+use app::error::Error as ErrorApp;
 use app::Application;
 use error::Error;
 use std::path::Path;
@@ -34,17 +35,23 @@ async fn main() {
     loop {
         select! {
             _app = app.execute(&mut output) => {
-                app = _app.unwrap()
+                app = match _app {
+                    Ok(next) => next,
+                    Err(error) => show_error(error),
+                }
             }
             key = lines.next() => {
                 if let Some(Ok(key)) = key {
-                    match key.as_str() {
-                        "BD" => app.button_bd().await.unwrap(),
-                        "L1" => app.button_l1().await.unwrap(),
-                        "L2" => app.button_l2().await.unwrap(),
-                        "L3" => app.button_l3().await.unwrap(),
-                        "L4" => app.button_l4().await.unwrap(),
-                        _ => {},
+                    let rst = match key.as_str() {
+                        "BD" => app.button_bd().await,
+                        "L1" => app.button_l1().await,
+                        "L2" => app.button_l2().await,
+                        "L3" => app.button_l3().await,
+                        "L4" => app.button_l4().await,
+                        _ => Ok(()),
+                    };
+                    if let Err(error) = rst {
+                        app = show_error(error);
                     }
                 }
             }
@@ -66,4 +73,10 @@ async fn open_pipes<P: AsRef<Path>, Q: AsRef<Path>>(
     let output = BufWriter::new(pipe_in);
     let input = BufReader::new(pipe_out);
     Ok((input, output))
+}
+
+/// Print and create an Error app with the fiven error
+fn show_error<E: std::fmt::Display>(error: E) -> App {
+    eprintln!("Error: {}", error);
+    App::ErrorApp(ErrorApp::new(error))
 }
