@@ -6,22 +6,29 @@ use enum_dispatch::enum_dispatch;
 #[cfg(feature = "hello")]
 use hello::Hello;
 use menu::Menu;
+#[cfg(feature = "music")]
+use music::MusicSelector;
 use std::marker::Unpin;
 use strum_macros::{EnumCount, EnumString, EnumVariantNames};
 use tokio::io::AsyncWrite;
 
 #[cfg(feature = "clock")]
 mod clock;
-pub mod error;
 #[cfg(feature = "hello")]
 mod hello;
+#[cfg(feature = "music")]
+mod music;
+
+pub mod error;
 mod menu;
 
 /// List of apps hidden from the menu.
+///
 /// Needed by error app
 pub const HIDDEN_APPS: &[&str] = &["error_app"];
 
 /// Listing of all implemented applications.
+///
 /// Probably some of them will be activated only with certain features.
 /// All the applications listed here must have in field, their structure which inherits the App trait.
 #[enum_dispatch(Application)]
@@ -35,6 +42,8 @@ pub enum App {
     Hello,
     #[cfg(feature = "clock")]
     Clock,
+    #[cfg(feature = "music")]
+    Music(MusicSelector),
 }
 
 /// Trait with all interactions between the AppManager and the App itself
@@ -47,7 +56,7 @@ pub trait Application {
     /// that closes must ask for the Menu to be opened (otherwise another application).
     ///
     /// Caution, the future can be destroyed during an interaction with one of the keys.
-    async fn execute<W: Unpin + AsyncWrite>(&self, out: &mut W) -> Result<App, AppError>
+    async fn execute<W: Unpin + AsyncWrite>(&mut self, out: &mut W) -> Result<App, AppError>
     where
         W: AsyncWrite + Unpin;
 

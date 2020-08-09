@@ -38,6 +38,7 @@ pub enum AppError {
     Unknown,
 }
 
+/// All errors that can be produced by the g13 display
 #[derive(Error, Debug)]
 pub enum DisplayError {
     /// Represents an error occured by writing in the G13 named pipes

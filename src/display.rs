@@ -9,6 +9,7 @@ use tokio::io::AsyncWrite;
 use tokio::io::AsyncWriteExt;
 
 /// Representation of the G13 LCD screen
+///
 /// It works using a AsyncWriter to flush the buffer to the real screen.
 pub struct G13Display<'a, W: Unpin + AsyncWrite + 'a> {
     framebuffer: [u8; 20 * 48],

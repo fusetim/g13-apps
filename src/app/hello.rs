@@ -24,7 +24,7 @@ pub struct Hello {
 
 #[async_trait(?Send)]
 impl Application for Hello {
-    async fn execute<W: Unpin + AsyncWrite>(&self, out: &mut W) -> Result<App, AppError>
+    async fn execute<W: Unpin + AsyncWrite>(&mut self, out: &mut W) -> Result<App, AppError>
     where
         W: AsyncWrite + Unpin,
     {

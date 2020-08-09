@@ -1,5 +1,5 @@
-use app::App;
 use app::error::Error as ErrorApp;
+use app::App;
 use app::Application;
 use error::Error;
 use std::path::Path;
@@ -60,7 +60,7 @@ async fn main() {
 }
 
 /// Open the G13 named pipes given.
-/// Pipes are open in BufReader annd BufWriter.
+/// Pipes are open in BufReader and BufWriter.
 ///
 /// path_in is path for the g13 input pipe
 /// and path_out is path for the g13 output pipe

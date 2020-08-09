@@ -25,7 +25,7 @@ pub struct Clock {
 
 #[async_trait(?Send)]
 impl Application for Clock {
-    async fn execute<W: Unpin + AsyncWrite>(&self, out: &mut W) -> Result<App, AppError>
+    async fn execute<W: Unpin + AsyncWrite>(&mut self, out: &mut W) -> Result<App, AppError>
     where
         W: AsyncWrite + Unpin,
     {

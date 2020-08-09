@@ -1,9 +1,9 @@
 use crate::app::App;
 use crate::app::Application;
-use crate::component::appbar::AppBar;
+use crate::component::AppBar;
 use crate::display::G13Display;
-use crate::style::{TEXT_REGULAR, TEXT_SMALL};
 use crate::error::AppError;
+use crate::style::{TEXT_REGULAR, TEXT_SMALL};
 use async_trait::async_trait;
 use embedded_graphics::{
     fonts::{Font6x8, Text},
@@ -18,6 +18,7 @@ use tokio::io::AsyncWrite;
 use tokio::time;
 
 /// An error app
+///
 /// Will be show when an app return an AppError
 #[derive(Debug)]
 pub struct Error {
@@ -61,7 +62,7 @@ impl Error {
 
 #[async_trait(?Send)]
 impl Application for Error {
-    async fn execute<W: Unpin + AsyncWrite>(&self, out: &mut W) -> Result<App, AppError>
+    async fn execute<W: Unpin + AsyncWrite>(&mut self, out: &mut W) -> Result<App, AppError>
     where
         W: AsyncWrite + Unpin,
     {
@@ -69,8 +70,7 @@ impl Application for Error {
         let mut display = G13Display::new(out);
 
         // Setup the appbar
-        AppBar::new("An error occured:", Point::zero(), Point::new(160, 10))
-            .draw(&mut display)?;
+        AppBar::new("An error occured:", Point::zero(), Point::new(160, 10)).draw(&mut display)?;
 
         // Print the lines 1-3 to the app
         let mut offset = 12;
@@ -79,18 +79,21 @@ impl Application for Error {
             // Get the number of chars to print
             let chars = if lines.len() < 20 { lines.len() } else { 20 };
             // Get the chars and print
-            let line : String = lines.drain(..chars).collect();
+            let line: String = lines.drain(..chars).collect();
             Text::new(&line, Point::new(0, offset))
-            .into_styled(*TEXT_REGULAR)
-            .draw(&mut display)?;
-            
-            offset+=8;
+                .into_styled(*TEXT_REGULAR)
+                .draw(&mut display)?;
+
+            offset += 8;
         }
 
         // Added a more info in the buttom line
-        Text::new("More info in logs... Use BD to continue...", Point::new(0, 38))
-            .into_styled(*TEXT_SMALL)
-            .draw(&mut display)?;
+        Text::new(
+            "More info in logs... Use BD to continue...",
+            Point::new(0, 38),
+        )
+        .into_styled(*TEXT_SMALL)
+        .draw(&mut display)?;
 
         display.flush().await?;
 

@@ -1,9 +1,9 @@
 use crate::app::App;
 use crate::app::Application;
-use crate::component::appbar::AppBar;
 use crate::app::HIDDEN_APPS;
-use crate::component::buttonbar::{Button, ButtonBar};
-use crate::component::list::List;
+use crate::component::AppBar;
+use crate::component::List;
+use crate::component::{Button, ButtonBar};
 use crate::display::G13Display;
 use crate::error::AppError;
 use async_trait::async_trait;
@@ -34,14 +34,19 @@ impl Default for Menu {
         Self {
             end: false,
             // Build the app list
-            list: List::new(apps.iter().map(|name| name.to_string()).filter(|name| !HIDDEN_APPS.contains(&name.as_str())).collect()),
+            list: List::new(
+                apps.iter()
+                    .map(|name| name.to_string())
+                    .filter(|name| !HIDDEN_APPS.contains(&name.as_str()))
+                    .collect(),
+            ),
         }
     }
 }
 
 #[async_trait(?Send)]
 impl Application for Menu {
-    async fn execute<W: Unpin + AsyncWrite>(&self, out: &mut W) -> Result<App, AppError>
+    async fn execute<W: Unpin + AsyncWrite>(&mut self, out: &mut W) -> Result<App, AppError>
     where
         W: AsyncWrite + Unpin,
     {
