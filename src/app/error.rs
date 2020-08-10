@@ -3,14 +3,9 @@ use crate::app::Application;
 use crate::component::AppBar;
 use crate::display::G13Display;
 use crate::error::AppError;
-use crate::style::{TEXT_REGULAR, TEXT_SMALL};
+use crate::style::{TEXT_LIGHT, TEXT_SMALL};
 use async_trait::async_trait;
-use embedded_graphics::{
-    fonts::{Font6x8, Text},
-    pixelcolor::BinaryColor,
-    prelude::*,
-    style::TextStyleBuilder,
-};
+use embedded_graphics::{fonts::Text, prelude::*};
 use std::marker::Unpin;
 use std::str::FromStr;
 use std::time::Duration;
@@ -77,11 +72,11 @@ impl Application for Error {
         let mut lines = self.error.clone();
         for _ in 1..3 {
             // Get the number of chars to print
-            let chars = if lines.len() < 20 { lines.len() } else { 20 };
+            let chars = if lines.len() < 26 { lines.len() } else { 26 };
             // Get the chars and print
             let line: String = lines.drain(..chars).collect();
             Text::new(&line, Point::new(0, offset))
-                .into_styled(*TEXT_REGULAR)
+                .into_styled(*TEXT_LIGHT)
                 .draw(&mut display)?;
 
             offset += 8;

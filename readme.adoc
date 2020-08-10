@@ -37,7 +37,7 @@ Applications will be similar to the original G13. You will find a list of applic
 
 - [x] Menu -- the application selector
 - [x] Clock -- analog and digital
-- [ ] Music Player -- based upon MPRIS data
+- [x] Music Player -- based upon MPRIS data
 
 [NOTE]
 --

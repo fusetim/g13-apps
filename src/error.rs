@@ -26,8 +26,18 @@ pub enum AppError {
     UnknownApp(#[from] strum::ParseError),
 
     /// Represents an error while using a badly initilized component
-    #[error("A component is badly initialized")]
+    #[error("Component badly initialized")]
     BadInitialization,
+
+    /// Represents a DBus Error, thrown only by the music app
+    #[cfg(feature = "music")]
+    #[error("DBus error")]
+    DBusError,
+
+    /// Represents an error in finding music players
+    #[cfg(feature = "music")]
+    #[error("Can't find music players")]
+    SourceFindingError,
 
     /// Represents an error caused by the G13 display
     #[error("display error")]

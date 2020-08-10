@@ -1,5 +1,5 @@
 use crate::error::DisplayError;
-use crate::style::TEXT_REGULAR;
+use crate::style::TEXT_LIGHT;
 use embedded_graphics::drawable::Drawable;
 use embedded_graphics::drawable::Pixel;
 use embedded_graphics::fonts::Text;
@@ -83,7 +83,7 @@ impl List {
                         &format!("{} {}", prefix, name),
                         Point::new(left_offset + 1, up_offset + 8 * i),
                     )
-                    .into_styled(*TEXT_REGULAR)
+                    .into_styled(*TEXT_LIGHT)
                     .into_iter()
                     // Remove the overflow
                     .filter(|pixel| {

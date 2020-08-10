@@ -1,13 +1,11 @@
+use super::MusicPlayer;
 use crate::app::App;
 use crate::app::Application;
 use crate::component::{AppBar, Button, ButtonBar, List};
 use crate::display::G13Display;
 use crate::error::AppError;
 use async_trait::async_trait;
-use embedded_graphics::{
-    pixelcolor::BinaryColor, prelude::*, primitives::Rectangle, style::PrimitiveStyleBuilder,
-};
-use mpris::DBusError;
+use embedded_graphics::{pixelcolor::BinaryColor, prelude::*};
 use mpris::Player;
 use mpris::PlayerFinder;
 use once_cell::sync::Lazy;
@@ -56,13 +54,11 @@ impl Application for MusicSelector {
             list.draw_default(&mut display)?;
             display.flush().await?;
         }
-        println!("Should exit!");
 
         if self.return_menu {
             Ok(App::Menu(Default::default()))
         } else {
-            // Will changed in the future
-            Ok(App::Menu(Default::default()))
+            Ok(App::MusicPlayer(MusicPlayer::new(list.get_current())))
         }
     }
 
@@ -107,10 +103,11 @@ impl MusicSelector {
     /// Init the list component
     fn init(&mut self) -> Result<(), AppError> {
         // Get a player finder
-        let finder = PlayerFinder::new().map_err(|_| AppError::BadInitialization)?;
+        let finder = PlayerFinder::new().map_err(|_| AppError::DBusError)?;
         // get the players list
-        let players: Vec<Player<'_>> =
-            finder.find_all().map_err(|_| AppError::BadInitialization)?;
+        let players: Vec<Player<'_>> = finder
+            .find_all()
+            .map_err(|_| AppError::SourceFindingError)?;
         // get their names
         let names: Vec<String> = players.iter().map(|p| p.identity().to_owned()).collect();
         // create the list
@@ -122,7 +119,7 @@ impl MusicSelector {
 // The static part of the selector interface
 static SELECTOR_INTERFACE: Lazy<Vec<Pixel<BinaryColor>>> = Lazy::new(|| {
     // Draw the app bar
-    let appbar = AppBar::new("Select a player:", Point::zero(), Point::new(160, 10)).into_iter();
+    let appbar = AppBar::new("Select a player:", Point::zero(), Point::new(160, 8)).into_iter();
 
     // Draw the button info
     let mut buttonbar: ButtonBar = Default::default();

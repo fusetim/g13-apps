@@ -7,6 +7,8 @@ use enum_dispatch::enum_dispatch;
 use hello::Hello;
 use menu::Menu;
 #[cfg(feature = "music")]
+use music::MusicPlayer;
+#[cfg(feature = "music")]
 use music::MusicSelector;
 use std::marker::Unpin;
 use strum_macros::{EnumCount, EnumString, EnumVariantNames};
@@ -25,7 +27,7 @@ mod menu;
 /// List of apps hidden from the menu.
 ///
 /// Needed by error app
-pub const HIDDEN_APPS: &[&str] = &["error_app"];
+pub const HIDDEN_APPS: &[&str] = &["error_app", "menu", "music_player"];
 
 /// Listing of all implemented applications.
 ///
@@ -44,6 +46,8 @@ pub enum App {
     Clock,
     #[cfg(feature = "music")]
     Music(MusicSelector),
+    #[cfg(feature = "music")]
+    MusicPlayer,
 }
 
 /// Trait with all interactions between the AppManager and the App itself
