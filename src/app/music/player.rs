@@ -24,7 +24,7 @@ enum Command {
     Next,
 }
 
-/// Music Selector is ann app to select the wanted player to show.
+/// Music Player show the music asscoiated with a player
 #[derive(Clone, Debug, Default)]
 pub struct MusicPlayer {
     end: bool,
@@ -89,14 +89,15 @@ impl Application for MusicPlayer {
                 bottom_right = Point::new(160, 34),
                 style = *FILL_OFF,
             )
-            .draw(&mut display);
+            .draw(&mut display)?;
 
             // Print the song title
             let mut offset = 10;
             let mut lines = song.title.clone();
-            for _ in 1..2 {
+            for _ in 1..=2 {
+                if lines.is_empty() { continue; }
                 // Get the number of chars to print
-                let chars = if lines.len() < 26 { lines.len() } else { 20 };
+                let chars = if lines.len() < 26 { lines.len() } else { 26 };
                 // Get the chars and print
                 let line: String = lines.drain(..chars).collect();
                 Text::new(&line, Point::new(0, offset))
@@ -120,7 +121,7 @@ impl Application for MusicPlayer {
         Ok(App::Menu(Default::default()))
     }
 
-    // Selection button
+    // Play/Pause button
     async fn button_l1(&mut self) -> Result<(), AppError> {
         self.commands.push(Command::PlayPause);
         Ok(())

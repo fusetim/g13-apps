@@ -13,7 +13,7 @@ use std::time::Duration;
 use tokio::io::AsyncWrite;
 use tokio::time;
 
-/// Music Selector is ann app to select the wanted player to show.
+/// Music Selector is an app to select the wanted player to show.
 #[derive(Clone, Debug, Default)]
 pub struct MusicSelector {
     end: bool,
