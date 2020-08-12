@@ -49,17 +49,13 @@ NOTE: Feel free to open an issue (or PR) to request another application.
 
 == Getting started
 
+=== Prerequisites
 First of all, you will need a recent Rust setup. See https://rustup.rs[Rustup] installation guide, if needed.
-
-To build g13-apps, you need to clone the repo:
-```shell
-$ git clone https://github.com/fusetim/g13-apps.git
-```
 
 Before compiling g13-apps, you will need to know the paths to the in and out pipes of the https://github.com/ecraven/g13[G13 driver].
 By default, it's `/tmp/g13-0` (in) and `/tmp/g13-0_out` (out).
 
-.Set-up the env-var
+.Set-up the env-var:
 ```shell
 $ set -x G13_IN /run/g13d/g13-0
 $ set -x G13_OUT /run/g13d/g13-0_out
@@ -69,26 +65,67 @@ $ set -x G13_OUT /run/g13d/g13-0_out
 Please note that the indicated pipe paths are included and compiled. + 
 If the paths ever change, it will be necessary to recompile the whole app.
 
+Also, you have to kown what applications you want and select the features you want.
+Keep them in mind, we will need that soon.
+
+=== Build and Install
+
+Now you have two ways in front of you:
+`cargo install` or clone, build and copy.
+
+==== Cargo install
+
+With cargo install, all you have to do is :
+```shell
+$ cargo install --git https://github.com/fusetim/g13-apps [--features <feature1> [feature2..] ]
+```
+
+This command will build G13 Apps with the given features and install it at `$HOME/.cargo/bin/g13-apps` (by default, look for --root for custom path).
+
+==== Clone, Build and Copy
+
+To build g13-apps, you need to clone the repo:
+```shell
+$ git clone https://github.com/fusetim/g13-apps.git
+```
+
 And finally, you can build the apps with all the features you want:
 ```shell
 $ cargo build --release [--features <feature1> [feature2..] ]
 ```
 
-.Build G13-apps with clock feature:
-====
-If you want the clock app, for example, just add the clock feature, like this:
-```shell
-$ cargo build --release --features clock
-```
-====
-
 And now, enjoy your new application at `./target/release/g13-apps`.
+
+If you want to use g13-apps as a system app or a user service, you should now copy the binary in a PATH-known directory or add it to your path.
+For the user service, any directory can work.
+
+=== Install as a user service
+
+NOTE: These steps focus on the *systemd User Service*. Feel free to do a PR to add another system.
+
+Now you surely want to use tis app as a user system and not launch it by yourself.
+So, check out the link:g13-apps.service[] and install it in `$HOME/.config/systemd/user/`.
+
+You should now enable it with:
+```shell
+$ systemctl --user enable g13-apps
+```
+
+and you can start it:
+
+```shell
+$ systemctl --user start g13-apps
+```
+
+Now, g13-apps will be launch when you boot :)
+
+=== Keybinds
 
 All you have to do now is configure the right key-binding (in the G13 driver's config) and you will be able to take advantage of all the applications you have chosen. See link:g13-apps.bind[] for example.
 
-NOTE: Implementation as a user service is planned in the future.
+By default, the G13 keybinds is at `/etc/g13d/default.bind`. 
 
-NOTE: If wanted, you can install g13-apps as a system app with `cargo install`.
+And finally, you can now use all the powers of this g13 apps.
 
 == License
 

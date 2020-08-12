@@ -1,0 +1,11 @@
+# G13-Apps user service for systemd.
+[Unit]
+Description=G13 Apps
+
+[Service]
+# Change this path if `cargo install` use another root path
+# or if you use a custom path
+ExecStart=%h/.cargo/bin/g13-apps
+
+[Install]
+WantedBy=default.target
