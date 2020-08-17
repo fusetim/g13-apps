@@ -50,7 +50,7 @@ impl Application for Hello {
         }
 
         // Return to menu app
-        Ok(App::from_str("menu")?)
+        Ok(App::Menu(Default::default()))
     }
 
     /// Not used

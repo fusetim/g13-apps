@@ -57,7 +57,7 @@ impl Application for Clock {
         }
 
         // Return to menu app
-        Ok(App::from_str("menu")?)
+        Ok(App::Menu(Default::default()))
     }
 
     /// Not used

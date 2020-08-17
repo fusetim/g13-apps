@@ -77,7 +77,10 @@ impl Application for Menu {
         }
 
         // In case, an app is selected, we ask for run it.
-        Ok(App::from_str(self.list.get_current())?)
+        match App::from_str(self.list.get_current()) {
+            Ok(app) => Ok(app),
+            Err(err) => Err(AppError::UnknownApp{name: self.list.get_current().to_owned(), source: err})
+        }
     }
 
     /// Represents the selection button

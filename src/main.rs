@@ -76,7 +76,12 @@ async fn open_pipes<P: AsRef<Path>, Q: AsRef<Path>>(
 }
 
 /// Print and create an Error app with the fiven error
-fn show_error<E: std::fmt::Display>(error: E) -> App {
+fn show_error<E: std::error::Error>(error: E) -> App {
     eprintln!("Error: {}", error);
+    let mut source : Option<&(dyn std::error::Error + 'static)> = error.source();
+    while let Some(&err) = source.as_ref() {
+        eprintln!("source: {}", err);
+        source = err.source();
+    }
     App::ErrorApp(ErrorApp::new(error))
 }

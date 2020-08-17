@@ -15,14 +15,8 @@ use once_cell::sync::Lazy;
 use std::time::Duration;
 use tokio::io::AsyncWrite;
 use tokio::time;
-
-#[derive(Clone, Debug)]
-enum Command {
-    PlayPause,
-    Stop,
-    Previous,
-    Next,
-}
+use super::Command;
+use super::MusicError;
 
 /// Music Player show the music asscoiated with a player
 #[derive(Clone, Debug, Default)]
@@ -41,11 +35,11 @@ impl Application for MusicPlayer {
         let mut interval = time::interval(Duration::from_millis(100));
         let mut display = G13Display::new(out);
         // Get a player finder
-        let finder = PlayerFinder::new().map_err(|_| AppError::DBusError)?;
+        let finder = PlayerFinder::new().map_err(MusicError::from)?;
         // get the players list
         let players: Vec<Player<'_>> = finder
             .find_all()
-            .map_err(|_| AppError::SourceFindingError)?;
+            .map_err(MusicError::from)?;
         // get the wanted player
         let player: Player = players
             .into_iter()
@@ -65,17 +59,17 @@ impl Application for MusicPlayer {
                 match cmd {
                     Command::PlayPause => player
                         .checked_play_pause()
-                        .map_err(|_| AppError::DBusError)?,
-                    Command::Stop => player.checked_stop().map_err(|_| AppError::DBusError)?,
+                        .map_err(|err| MusicError::CommandError(cmd.clone(), Box::new(err.into())))?,
+                    Command::Stop => player.checked_stop().map_err(|err| MusicError::CommandError(cmd.clone(), Box::new(err.into())))?,
                     Command::Previous => {
-                        player.checked_previous().map_err(|_| AppError::DBusError)?
+                        player.checked_previous().map_err(|err| MusicError::CommandError(cmd.clone(), Box::new(err.into())))?
                     }
-                    Command::Next => player.checked_next().map_err(|_| AppError::DBusError)?,
+                    Command::Next => player.checked_next().map_err(|err| MusicError::CommandError(cmd.clone(), Box::new(err.into())))?,
                 };
             }
 
             // get the current song
-            let song = Song::from(player.get_metadata().map_err(|_| AppError::DBusError)?);
+            let song = Song::from(player.get_metadata().map_err(MusicError::from)?);
 
             // continue until song changed
             if Some(&song) == last_song.as_ref() {

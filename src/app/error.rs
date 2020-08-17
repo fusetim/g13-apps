@@ -70,7 +70,7 @@ impl Application for Error {
         // Print the lines 1-3 to the app
         let mut offset = 12;
         let mut lines = self.error.clone();
-        for _ in 1..3 {
+        for _ in 1..=3 {
             // Get the number of chars to print
             let chars = if lines.len() < 26 { lines.len() } else { 26 };
             // Get the chars and print
@@ -97,7 +97,11 @@ impl Application for Error {
         while !self.end {
             interval.tick().await;
         }
-        Ok(App::from_str(&self.return_to)?)
+
+        match App::from_str(&self.return_to) {
+            Ok(app) => Ok(app),
+            Err(err) => Err(AppError::UnknownApp{name: self.return_to.clone(), source: err})
+        }
     }
 
     /// Not used

@@ -1,10 +1,22 @@
 mod player;
 mod selector;
+mod error;
 
 pub use player::MusicPlayer;
 pub use selector::MusicSelector;
+pub use error::MusicError;
 
 use mpris::{Metadata, MetadataValue};
+use std::string::ToString;
+use strum_macros::Display;
+
+#[derive(Clone, Debug, Display)]
+pub enum Command {
+    PlayPause,
+    Stop,
+    Previous,
+    Next,
+}
 
 /// Represents a Song with only the basic info : title and artists.
 #[derive(Default, Clone, Eq, PartialEq, Debug)]

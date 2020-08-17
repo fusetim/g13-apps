@@ -12,6 +12,7 @@ use once_cell::sync::Lazy;
 use std::time::Duration;
 use tokio::io::AsyncWrite;
 use tokio::time;
+use super::MusicError;
 
 /// Music Selector is an app to select the wanted player to show.
 #[derive(Clone, Debug, Default)]
@@ -103,11 +104,11 @@ impl MusicSelector {
     /// Init the list component
     fn init(&mut self) -> Result<(), AppError> {
         // Get a player finder
-        let finder = PlayerFinder::new().map_err(|_| AppError::DBusError)?;
+        let finder = PlayerFinder::new().map_err(MusicError::from)?;
         // get the players list
         let players: Vec<Player<'_>> = finder
             .find_all()
-            .map_err(|_| AppError::SourceFindingError)?;
+            .map_err(MusicError::from)?;
         // get their names
         let names: Vec<String> = players.iter().map(|p| p.identity().to_owned()).collect();
         // create the list

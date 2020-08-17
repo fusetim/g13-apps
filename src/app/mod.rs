@@ -14,6 +14,9 @@ use std::marker::Unpin;
 use strum_macros::{EnumCount, EnumString, EnumVariantNames};
 use tokio::io::AsyncWrite;
 
+#[cfg(feature = "music")]
+pub use music::MusicError;
+
 #[cfg(feature = "clock")]
 mod clock;
 #[cfg(feature = "hello")]
